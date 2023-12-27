@@ -8,6 +8,11 @@
 class UWidgetComponent;
 class UGameModeWidget;
 
+class AEvent_CameraLock;
+class AEvent_SavePoint;
+
+class ALemonCharacter;
+
 UCLASS()
 class LEMONSOUR_API ALemonSourGameModeBase : public AGameModeBase
 {
@@ -19,13 +24,25 @@ public:
 
 	virtual void BeginPlay() override;
 
-	// gamemode가 사용할 위젯: 일단 BP에서 넘겨보기
-	/*UPROPERTY(VisibleAnywhere)
-	UWidgetComponent* WidgetComponent;*/
-
 	UPROPERTY(EditAnywhere, Category = "ClassTypes")
 	TSubclassOf<UUserWidget> WidgetClass;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Runtime")
 	UGameModeWidget* GameModeWidget;
+
+public:
+	// 리스폰을 위한 값을 설정합니다
+	void SetCameraActor(AEvent_CameraLock* Actor);
+	void SetSaveActor(AEvent_SavePoint* Actor);
+	// 반대로 외부에서 참조합니다
+	AEvent_CameraLock* GetCameraActor();
+	AEvent_SavePoint* GetSaveActor();
+
+	void RespawnCharacter(ALemonCharacter* LemonCharacter);
+
+private:
+	// 리스폰을 위한 엑터 데이터입니다
+	AEvent_CameraLock* Tmp_CameraActor;
+	AEvent_CameraLock* CameraActor;
+	AEvent_SavePoint* SaveActor;
 };
