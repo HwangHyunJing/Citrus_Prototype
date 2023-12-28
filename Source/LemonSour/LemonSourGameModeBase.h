@@ -30,19 +30,24 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Category = "Runtime")
 	UGameModeWidget* GameModeWidget;
 
+	// 리스폰을 위한 엑터 데이터입니다
+	AEvent_CameraLock* Tmp_CameraEvent;
+	// 231228; 자꾸 call ref되서 그냥 save point 이벤트로 옮겨버렸습니다
+	AEvent_CameraLock* CameraEvent;
+	AEvent_SavePoint* SaveEvent;
+
 public:
 	// 리스폰을 위한 값을 설정합니다
-	void SetCameraActor(AEvent_CameraLock* Actor);
-	void SetSaveActor(AEvent_SavePoint* Actor);
+	void SetCameraEvent(AEvent_CameraLock* Actor);
+	void SetSaveEvent(AEvent_SavePoint* Actor);
 	// 반대로 외부에서 참조합니다
-	AEvent_CameraLock* GetCameraActor();
-	AEvent_SavePoint* GetSaveActor();
+	AEvent_CameraLock* GetCameraEvent();
+	AEvent_SavePoint* GetSaveEvent();
+	// [TEST] 231228; call by ref 문제 때문에... 임시로 만듦
+	// void FORCE_CopyCameraActor(AEvent_CameraLock* Actor);
 
 	void RespawnCharacter(ALemonCharacter* LemonCharacter);
 
 private:
-	// 리스폰을 위한 엑터 데이터입니다
-	AEvent_CameraLock* Tmp_CameraActor;
-	AEvent_CameraLock* CameraActor;
-	AEvent_SavePoint* SaveActor;
+	FVector DefaultRespawnPoint;
 };

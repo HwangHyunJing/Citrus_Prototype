@@ -13,6 +13,7 @@
 #include "Events/Event_CameraLock.h"
 #include "Events/Event_SavePoint.h"
 
+
 ALemonSourGameModeBase::ALemonSourGameModeBase()
 {
 
@@ -33,44 +34,56 @@ void ALemonSourGameModeBase::BeginPlay()
 			// UE_LOG(LogTemp, Warning, TEXT("added!"));
 		}
 	}
+
+	// 디폴트 리스폰 지점입니다: 시작 지점 > 캐릭터 > 0 벡터 순서
+	
 }
 
-void ALemonSourGameModeBase::SetCameraActor(AEvent_CameraLock* Actor)
+void ALemonSourGameModeBase::SetCameraEvent(AEvent_CameraLock* Actor)
 {
-	Tmp_CameraActor = Actor;
+	Tmp_CameraEvent = Actor;
 }
 
-void ALemonSourGameModeBase::SetSaveActor(AEvent_SavePoint* Actor)
+void ALemonSourGameModeBase::SetSaveEvent(AEvent_SavePoint* Actor)
 {
-	SaveActor = Actor;
+	SaveEvent = Actor;
 	// 카메라 모드 엑터도 저장합니다
-	CameraActor = Tmp_CameraActor;
+	CameraEvent = Tmp_CameraEvent;
+		
 }
 
-AEvent_CameraLock* ALemonSourGameModeBase::GetCameraActor()
+AEvent_CameraLock* ALemonSourGameModeBase::GetCameraEvent()
 {
-	return CameraActor;
+	return CameraEvent;
 }
 
-AEvent_SavePoint* ALemonSourGameModeBase::GetSaveActor()
+AEvent_SavePoint* ALemonSourGameModeBase::GetSaveEvent()
 {
-	return SaveActor;
+	return SaveEvent;
 }
+
+
 
 void ALemonSourGameModeBase::RespawnCharacter(ALemonCharacter* LemonCharacter)
 {
-	// (2-1) 위치 조정
-	FVector RespawnLocation = FVector(0, 0, 0);
-	if (SaveActor)
-		RespawnLocation = SaveActor->GetRespawnLocation();
-
-	LemonCharacter->SetActorLocation(RespawnLocation);
 	
-	// (2-2) 카메라 락 호출
-	if (CameraActor)
+	if (SaveEvent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cam Lock called by game mode base"));
-		CameraActor->LockCamera(LemonCharacter);
+		// (2-2) 카메라 호출
+		AEvent_CameraLock* CameraLock = GetCameraEvent();
+		if (CameraLock)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Cam Lock called by game mode base"));
+			CameraLock->LockCamera(LemonCharacter);
+		}
+
+		// (2-1) 위치 조정
+		FVector RespawnLocation = FVector(0, 0, 0);
+		RespawnLocation = SaveEvent->GetRespawnLocation();
+		LemonCharacter->SetActorLocation(RespawnLocation);
+
+		
 	}
 		
+
 }
