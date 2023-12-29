@@ -12,6 +12,7 @@ class AEvent_CameraLock;
 class AEvent_SavePoint;
 
 class ALemonCharacter;
+class APlayerStart;
 
 UCLASS()
 class LEMONSOUR_API ALemonSourGameModeBase : public AGameModeBase
@@ -46,7 +47,15 @@ public:
 	// [TEST] 231228; call by ref ¹®Á¦ ¶§¹®¿¡... ÀÓ½Ã·Î ¸¸µê
 	// void FORCE_CopyCameraActor(AEvent_CameraLock* Actor);
 
-	void RespawnCharacter(ALemonCharacter* LemonCharacter);
+	void RespawnCharacter();
+
+protected:
+	ALemonCharacter* LemonCharacter;
+	APlayerStart* StartPoint;
+
+	// ¹º°¡ null ¶ã±îºÁ ¹«¼­¿ò
+	ALemonCharacter* SearchLemonCharacter();
+
 
 private:
 	FVector DefaultRespawnPoint;

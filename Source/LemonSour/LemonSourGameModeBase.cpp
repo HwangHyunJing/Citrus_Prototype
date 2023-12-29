@@ -8,10 +8,15 @@
 
 // 캐릭터
 #include "Character/LemonCharacter.h"
+// 외부 참조 (all actors of class)
+#include "Kismet/GameplayStatics.h"
 
 // 이벤트
 #include "Events/Event_CameraLock.h"
 #include "Events/Event_SavePoint.h"
+
+// 시작 지점
+#include "GameFramework/PlayerStart.h"
 
 
 ALemonSourGameModeBase::ALemonSourGameModeBase()
@@ -35,8 +40,16 @@ void ALemonSourGameModeBase::BeginPlay()
 		}
 	}
 
-	// 디폴트 리스폰 지점입니다: 시작 지점 > 캐릭터 > 0 벡터 순서
-	
+	// 캐릭터를 참조합니다
+	SearchLemonCharacter();
+
+	// 시작 지점 데이터를 저장합니다
+	TArray<AActor*> Arr;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), Arr);
+	if (!Arr.IsEmpty() && Arr[0])
+	{
+		StartPoint = Cast<APlayerStart>(Arr[0]);
+	}
 }
 
 void ALemonSourGameModeBase::SetCameraEvent(AEvent_CameraLock* Actor)
@@ -64,26 +77,40 @@ AEvent_SavePoint* ALemonSourGameModeBase::GetSaveEvent()
 
 
 
-void ALemonSourGameModeBase::RespawnCharacter(ALemonCharacter* LemonCharacter)
+void ALemonSourGameModeBase::RespawnCharacter()
 {
-	
-	if (SaveEvent)
+
+	// (2-1) 카메라 호출
+	// AEvent_CameraLock* CameraLock = GetCameraEvent();
+	if (CameraEvent)
 	{
-		// (2-2) 카메라 호출
-		AEvent_CameraLock* CameraLock = GetCameraEvent();
-		if (CameraLock)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Cam Lock called by game mode base"));
-			CameraLock->LockCamera(LemonCharacter);
-		}
-
-		// (2-1) 위치 조정
-		FVector RespawnLocation = FVector(0, 0, 0);
-		RespawnLocation = SaveEvent->GetRespawnLocation();
-		LemonCharacter->SetActorLocation(RespawnLocation);
-
-		
+		UE_LOG(LogTemp, Warning, TEXT("Cam Lock called by game mode base"));
+		CameraEvent->LockCamera(LemonCharacter);
 	}
-		
+	else if(Tmp_CameraEvent)
+	{
+		// 없을 경우 그냥 리셋해야 함
+		Tmp_CameraEvent->ResetCamera(LemonCharacter);
+	}
+	
+	// (2-2) 위치 조정
+	FVector RespawnLocation = FVector(0, 0, 0);
+	if (SaveEvent)
+	{		
+		RespawnLocation = SaveEvent->GetRespawnLocation();
+	}
+	else if(StartPoint)
+	{
+		RespawnLocation = StartPoint->GetActorLocation();
+	}
 
+	LemonCharacter->SetActorLocation(RespawnLocation);
+}
+
+ALemonCharacter* ALemonSourGameModeBase::SearchLemonCharacter()
+{
+	if(GetWorld())
+		LemonCharacter = Cast<ALemonCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	return LemonCharacter;
 }
