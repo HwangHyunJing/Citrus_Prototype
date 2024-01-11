@@ -107,6 +107,11 @@ void ALemonSourGameModeBase::RespawnCharacter()
 	LemonCharacter->SetActorLocation(RespawnLocation);
 }
 
+void ALemonSourGameModeBase::InvokeEvents(EEventCode EventCode)
+{
+	UE_LOG(LogTemp, Error, TEXT("Invoke: Gmode Base called"));
+}
+
 ALemonCharacter* ALemonSourGameModeBase::SearchLemonCharacter()
 {
 	if(GetWorld())

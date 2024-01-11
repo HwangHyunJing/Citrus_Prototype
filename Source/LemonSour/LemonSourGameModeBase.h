@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "HUD/GameModeWidget.h"
+#include "Public/Events/InputEventCode.h"
 #include "LemonSourGameModeBase.generated.h"
 
 class UWidgetComponent;
@@ -44,10 +45,11 @@ public:
 	// 반대로 외부에서 참조합니다
 	AEvent_CameraLock* GetCameraEvent();
 	AEvent_SavePoint* GetSaveEvent();
-	// [TEST] 231228; call by ref 문제 때문에... 임시로 만듦
-	// void FORCE_CopyCameraActor(AEvent_CameraLock* Actor);
 
 	void RespawnCharacter();
+
+	// event에게서 code에 의한 호출을 받습니다
+	virtual void InvokeEvents(EEventCode EventCode);
 
 protected:
 	ALemonCharacter* LemonCharacter;
